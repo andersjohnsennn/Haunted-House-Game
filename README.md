@@ -2,6 +2,29 @@
 
 A two-team, first-person cinematic horror game for a Halloween party. One person drives it on a TV or projector; the room decides together. The first team to escape the mansion wins. There is no overall timer.
 
+## Quick start
+
+**To play right away** (nothing to install):
+
+1. On GitHub, click **Code → Download ZIP** and unzip it (or `git clone` the repository).
+2. Double-click `index.html` and open it in Chrome or Edge. It needs an internet connection (for the 3D engine and the fonts).
+3. On the setup screen, type the team names, the players and the host's name. Click a player's circle to add a photo. Then **Review players → Begin**.
+4. Press **F** for fullscreen and click once so sound is allowed. **H** opens the host controls. The rest of this README explains the rules and every room.
+
+No names at all is fine too: random picks then say "one of you".
+
+**To make it your own party** (optional):
+
+| You want | Do this |
+| --- | --- |
+| Your guest list saved in a file, not typed each time | Copy `js/party.js` to `js/party.local.js` and fill in the teams, the host and who is sitting out (see *Your own party* below). |
+| Photos from a folder | Put one photo per player in `photos/`, named after them in lower case (`anna.png`). Then double-click `make-photos.bat` (Windows). On a Mac, upload photos on the setup screen instead, or run a local web server (`python3 -m http.server` in this folder, then open `http://localhost:8000`). |
+| Your own quiz questions | In the game: **H → Question bank**. Or edit the list in `js/quiz-bank.js`. |
+| A challenge for the Cursed Chamber | Nothing to set up: the game tells the team the host has a challenge for them, and you make one up on the night. |
+| Different drinks or no alcohol | Edit the wheel's slices and wording in `js/wheel.js` and the death forfeit (`forfeits`) in `js/mansion-data.js`. |
+
+`js/party.local.js`, `js/photos.local.js` and the photos in `photos/` stay out of git, so your guests' names and faces are never uploaded. Without them, the browser console shows "file not found" errors for those two files; they are harmless.
+
 ## Running it
 
 Double-click `index.html` (Chrome or Edge recommended), press **F** for fullscreen, and click once anywhere so the browser allows sound.
