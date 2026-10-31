@@ -1,0 +1,7 @@
+Put the host's photo in this folder as host.jpg (or host.png).
+
+It becomes "The Master of the House": an old oil portrait in a gilded frame that
+hangs in the entrance hall and appears on the wall whenever the house raises a toast.
+
+A photo uploaded in the game's setup screen ("Master of the House") takes priority
+over this file. A portrait-shaped photo with the face in the upper part works best.

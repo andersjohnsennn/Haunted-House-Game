@@ -1,0 +1,4 @@
+Put one photo per player in this folder, named after the player in lower case:
+anna.png, bjørn.png (.jpg works too). The game crops each one to the face.
+Photos here are kept out of git (see .gitignore). The folder is set by
+`photos` in js/party.js / js/party.local.js.
