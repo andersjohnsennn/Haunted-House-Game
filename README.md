@@ -17,9 +17,11 @@ The title screen has two columns, one per team. It starts with the teams from yo
 
 **Photos from the folder:** each player's photo is a file in `photos/`, named after the player in lower case (`anna.png`, `bjørn.png`; `.jpg` works too). The game crops it to the face automatically. A photo uploaded on the setup screen wins over the file. The folder is set by `photos` in the party file.
 
+**Then double-click `make-photos.bat`** (and again whenever you add or change a photo). Opened by double-clicking `index.html`, the browser won't let the game read photo files from disk, so the photos would show as initials. `make-photos.bat` packs them, already cropped, into `js/photos.local.js`, which the game loads like any other script. It needs nothing installed (it uses Windows PowerShell). Served from a local web server, the folder also works without it.
+
 ### Your own party
 
-`js/party.js` is an empty template. Copy it to `js/party.local.js` and fill in the two teams, who is sitting out, the host and the photo folder. `index.html` loads `js/party.local.js` right after `js/party.js`, and it replaces the template. `.gitignore` keeps `js/party.local.js`, the photos in `photos/` and `img/host.*` on your computer, so names and faces never end up in git. Without a `party.local.js` the game starts with empty teams (the browser console shows a harmless 404 for the missing file).
+`js/party.js` is an empty template. Copy it to `js/party.local.js` and fill in the two teams, who is sitting out, the host and the photo folder. `index.html` loads `js/party.local.js` right after `js/party.js`, and it replaces the template. `.gitignore` keeps `js/party.local.js`, `js/photos.local.js`, the photos in `photos/` and `img/host.*` on your computer, so names and faces never end up in git. Without a `party.local.js` the game starts with empty teams (the browser console shows a harmless 404 for the missing file).
 
 Edited your party file and want the setup screen to pick it up? Bump its `version`; the next page load replaces the teams once (the host's name and photos are kept).
 
@@ -97,7 +99,7 @@ Cinematics play in full the first time something is seen in a game and short aft
 ## The mansion so far
 
 ```
-Outside → Entrance Hall (D1) → Cursed Chamber [placeholder challenge] (D2)
+Outside → Entrance Hall (D1) → Cursed Chamber [the host's own challenge] (D2)
   → Sacrifice Chamber [challenge] → Crypt Landing (D3)
   → Knight's Drinking Duel [challenge] → Portrait Gallery (D4)
   → Ghost's Quiz [challenge, the silver dagger] → East Wing (D5)
@@ -139,7 +141,7 @@ Everything lives in data files; the field reference is at the top of each.
 - **Rooms and paths:** `js/mansion-data.js`. Add a location, point a choice at it with `to`. Fatal choices take `demon: 'doorway' | 'lightsOut' | 'behind' | 'ceiling' | 'crawl'`.
 - **Decision rooms without a custom 3D set:** `scene: { template: 'junction', theme: 'crypt' | 'gallery' | 'wing' | 'corridors', portals: ['door', 'nurseryDoor', 'arch', 'passage', 'stairsUp', 'stairsDown'] }`, one portal per choice (anchors `p0`, `p1`, ...).
 - **New challenges:** give a room `challenge: { id, type: 'placeholder', title, instructions }` for a host-confirmed challenge you describe in text, or reuse a type (`sacrifice`, `knightDuel`, `ghostQuiz`, `vampireCards`, `shellGame`). Add `onComplete: { to }` to walk automatically to the next junction afterwards. A new kind of challenge is a module `HH.Challenges.<type> = { async run(ctx) { ... return 'success' | 'fail'; } }` using the helpers in `js/challenge-kit.js`.
-- **Quiz questions:** in the game (**H** → **Question bank**: add, edit, delete, mark the correct answer, categories, usage, export/import JSON). To make a list permanent, export it and paste it over `HH.QUIZ_SAMPLES` in `js/quiz-bank.js`. The shipped questions are clearly marked SAMPLE.
+- **Quiz questions:** in the game (**H** → **Question bank**: add, edit, delete, mark the correct answer, categories, usage, export/import JSON). To make a list permanent, export it and paste it over `HH.QUIZ_SAMPLES` in `js/quiz-bank.js`, or write the questions there directly (`{ id, category, question, answers: [4 answers], correct: 0-3 }`, where `correct: 0` is the first answer). That list wins whenever it changes: every browser switches to it on its next load, replacing questions edited in the game before. The category is shown above each question.
 - **Rewards and chases:** a quiz room's `challenge.bonus: { flag, item }` offers the extra question for a flag (the dagger is `flag: 'weapon'`), and a choice with `chase: { unless: 'weapon' }` (on The Way Onward's door) sets the demon on the team unless it holds that flag. A corridor with `glow: true` gets the moonlit door.
 - **Forfeits (deaths):** `HH.MANSION.forfeits` (now `['3 sips']`; add more strings and one is picked at random), or give a fatal choice its own `forfeit`. The house rules screen in `index.html` mentions the 3 sips too.
 - **The Wheel of Bones (challenges):** slices, odds and wording in `js/wheel.js`.
@@ -160,6 +162,7 @@ Everything lives in data files; the field reference is at the top of each.
 | `js/party.js` | The guest list template: teams, the host, the photo folder |
 | `js/party.local.js` | Your own guest list (not in git; copy `js/party.js`) |
 | `photos/` | Player photos, one per player (`<name>.png`; not in git) |
+| `make-photos.bat`, `tools/make-photos.ps1` | Packs the photos into `js/photos.local.js` (not in git), so they work when `index.html` is double-clicked |
 | `js/roster.js` | Player registration and photos |
 | `js/challenge-kit.js` | Shared challenge UI, in-world markers, the placeholder challenge |
 | `js/challenge-*.js`, `js/quiz-bank.js` | The four challenges and the question bank |

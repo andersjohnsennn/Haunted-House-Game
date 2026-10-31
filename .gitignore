@@ -1,5 +1,6 @@
 # Personal party data: stays on this computer
 js/party.local.js
+js/photos.local.js
 photos/*
 !photos/PUT-PLAYER-PHOTOS-HERE.txt
 img/host.*

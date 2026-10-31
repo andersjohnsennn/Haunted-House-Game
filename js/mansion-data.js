@@ -131,9 +131,9 @@ HH.MANSION = {
       challenge: {
         id: 'cursed',
         type: 'placeholder',
-        title: 'Challenge to be revealed',
-        instructions: 'The real-life challenge for this room has not been decided yet. ' +
-                      'The host reads it out here, then records whether the team completed it.'
+        title: 'The host has a challenge for you',
+        instructions: 'Listen closely: the host will now give you your challenge. ' +
+                      'Complete it, and the chamber lets you pass.'
       },
       prompt: 'Three ways out of the chamber.',
       choices: [

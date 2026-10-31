@@ -2,7 +2,9 @@
    Player registration. Two teams, any number of players, an optional photo
    each. A player's photo is a file named after them in the photo folder set
    in js/party.js (e.g. "photos/anna.png"), or one uploaded on the setup
-   screen, which wins. Photos are cropped to a 256 px square JPEG; uploads
+   screen, which wins. make-photos.bat packs the folder into
+   js/photos.local.js, so the photos also show when index.html is opened by
+   double-clicking (the browser won't let a page read photo files from disk). Photos are cropped to a 256 px square JPEG; uploads
    are kept only in this browser (localStorage), never uploaded anywhere.
 
    HH.Roster.avatar(player, size) renders a portrait: the photo, or the
@@ -82,14 +84,21 @@ HH.Roster = (function () {
   // "<folder>/<name>.png" (or .jpg), the name in lower case: "photos/bjørn.png".
   const DIR = ((party && party.photos) || '').split('/').map(encodeURIComponent).join('/');
   const filePics = {}, hostPics = {};   // lower-case name -> data URL (players 256 px, the host 512 px); null if none (yet)
-  const nameKey = name => String(name || '').trim().toLowerCase();
+  const packed = HH.PHOTOS || {};       // js/photos.local.js: the same photos, already cropped
+  const nameKey = name => String(name || '').trim().toLowerCase().normalize('NFC');
   function loadFile(key, size, cache) {
-    if (!DIR || !key || key in cache) return;
+    if (!key || key in cache) return;
+    if (packed[key]) { cache[key] = packed[key]; return; }
+    if (!DIR) return;
     cache[key] = null;
     (function attempt(exts) {
       if (!exts.length) return;
       const img = new Image();
-      img.onload = () => { cache[key] = crop(img, size, true); photosChanged(); };
+      img.onload = () => {
+        // Opened from disk, the browser won't hand over the pixels: run make-photos.bat.
+        try { cache[key] = crop(img, size, true); } catch (e) { return; }
+        photosChanged();
+      };
       img.onerror = () => attempt(exts.slice(1));
       img.src = DIR + encodeURIComponent(key) + '.' + exts[0];
     })(['png', 'jpg', 'jpeg']);

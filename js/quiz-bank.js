@@ -1,25 +1,33 @@
 /* ==========================================================================
    The Ghost's question bank.
 
-   The questions below are SAMPLES for testing only. Replace them with your
-   own, either here or in the game (Host controls → Question bank). Edits
-   made in the game are stored in this browser; use Export there to save a
-   copy, and paste the exported list over HH.QUIZ_SAMPLES to make it the
-   permanent default.
+   The questions the Ghost asks. Change them here, or in the game (Host
+   controls → Question bank). Edits made in the game are stored in that
+   browser only; use Export there to save a copy, and paste the exported
+   list over HH.QUIZ_SAMPLES to make it the permanent default.
+
+   This list wins whenever it changes: every browser switches to the new
+   list on its next load, replacing questions edited in the game before.
 
    Each question: { id, category, question, answers: [4 strings], correct: 0-3 }
    ========================================================================== */
 
 window.HH = window.HH || {};
 
+
 HH.QUIZ_SAMPLES = [
-  { id: 'sample-1', category: 'SAMPLE', question: 'SAMPLE: In Ireland, which vegetable was carved into the first jack-o\'-lanterns?', answers: ['Pumpkin', 'Turnip', 'Potato', 'Cabbage'], correct: 1 },
-  { id: 'sample-2', category: 'SAMPLE', question: 'SAMPLE: In which year was the original film "Halloween" released?', answers: ['1974', '1978', '1982', '1986'], correct: 1 },
-  { id: 'sample-3', category: 'SAMPLE', question: 'SAMPLE: Who wrote the novel "Frankenstein"?', answers: ['Bram Stoker', 'Edgar Allan Poe', 'Mary Shelley', 'H. P. Lovecraft'], correct: 2 },
-  { id: 'sample-4', category: 'SAMPLE', question: 'SAMPLE: What is a group of crows called?', answers: ['A murder', 'A coven', 'A wake', 'A parliament'], correct: 0 },
-  { id: 'sample-5', category: 'SAMPLE', question: 'SAMPLE: How many legs does a spider have?', answers: ['Six', 'Eight', 'Ten', 'Twelve'], correct: 1 },
-  { id: 'sample-6', category: 'SAMPLE', question: 'SAMPLE: Which planet is known as the Red Planet?', answers: ['Venus', 'Jupiter', 'Mars', 'Saturn'], correct: 2 }
+  { id: 'horror-1', category: 'Horror', question: 'In Ireland, which vegetable was carved into the first jack-o\'-lanterns?', answers: ['Pumpkin', 'Turnip', 'Potato', 'Cabbage'], correct: 1 },
+  { id: 'horror-2', category: 'Horror', question: 'In which year was the original film "Halloween" released?', answers: ['1974', '1978', '1982', '1986'], correct: 1 },
+  { id: 'horror-3', category: 'Horror', question: 'Who wrote the novel "Frankenstein"?', answers: ['Bram Stoker', 'Edgar Allan Poe', 'Mary Shelley', 'H. P. Lovecraft'], correct: 2 },
+  { id: 'horror-4', category: 'Horror', question: 'What is a group of crows called?', answers: ['A murder', 'A coven', 'A wake', 'A parliament'], correct: 0 },
+  { id: 'horror-5', category: 'Horror', question: 'In which year did the Salem witch trials begin?', answers: ['1666', '1692', '1715', '1740'], correct: 1 },
+  { id: 'horror-6', category: 'Horror', question: 'What is the name of the vampire in the 1922 horror film "Nosferatu"?', answers: ['Count Dracula', 'Count Orlok', 'Count Karnstein', 'Count Zaroff'], correct: 1 },
+  { id: 'horror-7', category: 'Horror', question: 'What is the name of the fictional hotel in "The Shining"?', answers: ['The Stanley Hotel', 'The Overlook Hotel', 'The Bates Hotel', 'The Grand Budapest Hotel'], correct: 1 },
+  { id: 'horror-8', category: 'Horror', question: 'Which horror film was the first to win the Academy Award for Best Picture?', answers: ['The Exorcist', 'Psycho', 'The Silence of the Lambs', 'The Shining'], correct: 2 },
+  { id: 'horror-9', category: 'Horror', question: 'What is the name of the demon associated with the possession in "The Exorcist"?', answers: ['Valak', 'Azazel', 'Baal', 'Pazuzu'], correct: 3 }
 ];
+
+
 
 HH.QuizBank = (function () {
   const KEY = 'theHauntedHouse.quiz.v1';
@@ -27,13 +35,22 @@ HH.QuizBank = (function () {
   const esc = s => String(s).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
   const clone = x => JSON.parse(JSON.stringify(x));
 
+  // A saved bank only counts while HH.QUIZ_SAMPLES is the list it started from.
+  const FROM_KEY = 'theHauntedHouse.quizFrom.v1';
+  const fileId = (s => { let h = 5381; for (let i = 0; i < s.length; i++) h = (h * 33 + s.charCodeAt(i)) >>> 0; return h.toString(36); })(JSON.stringify(HH.QUIZ_SAMPLES));
   let list = load() || clone(HH.QUIZ_SAMPLES);
   let editing = null, filter = '';
 
   function load() {
-    try { const v = JSON.parse(localStorage.getItem(KEY)); return Array.isArray(v) ? v.filter(valid) : null; } catch (e) { return null; }
+    try {
+      if (localStorage.getItem(FROM_KEY) !== fileId) return null;
+      const v = JSON.parse(localStorage.getItem(KEY));
+      return Array.isArray(v) ? v.filter(valid) : null;
+    } catch (e) { return null; }
   }
-  function save() { try { localStorage.setItem(KEY, JSON.stringify(list)); } catch (e) { alert('Could not save the question bank in this browser.'); } }
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(list)); localStorage.setItem(FROM_KEY, fileId); } catch (e) { alert('Could not save the question bank in this browser.'); }
+  }
   function valid(q) {
     return q && typeof q.question === 'string' && q.question.trim() && Array.isArray(q.answers) && q.answers.length === 4 &&
       q.answers.every(a => typeof a === 'string' && a.trim()) && Number.isInteger(q.correct) && q.correct >= 0 && q.correct < 4;
